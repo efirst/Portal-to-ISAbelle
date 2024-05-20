@@ -26,6 +26,74 @@ def analyse_file_string(whole_file_string):
         "translations": state_action_proof_level_tuples
     }
 
+def analyse_file_string_with_defs(whole_file_string):
+    transitions = whole_file_string.split("<\TRANSEP>")
+    state_action_proof_level_tuples = list()
+    problem_names = list()
+    definition_names = list()
+    for transition in transitions:
+        if not transition:
+            continue
+        else:
+            state, action, proof_level = transition.split("<\STATESEP>")
+            hammer_results = "NA"
+        state = state.strip()
+        action = action.strip()
+        proof_level = int(proof_level.strip())
+        if action.startswith("definition"):
+            definition_names.append(action)
+        if (action.startswith("lemma") or action.startswith("theorem")) and not action.startswith("lemmas"):
+            problem_names.append(action)
+        state_action_proof_level_tuples.append((state, action, proof_level, hammer_results))
+    return {
+        "def_names": definition_names,
+        "problem_names": problem_names,
+        "translations": state_action_proof_level_tuples
+    }
+
+def extract_test_file_from_params(
+    jar_path, 
+    isabelle_path, 
+    working_directory, 
+    theory_file_path,
+    saving_path, 
+    error_path,
+    sub_saving_path,
+    sub_error_path
+):
+    env = None
+
+    # if os.path.isfile(saving_path):
+    #     return
+    try:
+        # Figure out the parameters to start the server
+        rank = 0
+        port = 8000 + rank
+        server_subprocess_id = start_server(jar_path, port, 
+            outputfile=sub_saving_path, errorfile=sub_error_path)
+        # Getting the environment
+        env = initialise_env(
+            port=port,
+            isa_path=isabelle_path,
+            theory_file_path=theory_file_path,
+            working_directory=working_directory,
+        )
+        whole_file_string = env.post("PISA extract data")
+        # Parse the string and dump
+        analysed_file = analyse_file_string_with_defs(whole_file_string)
+        # analysed_file = {}
+        analysed_file["whole_thing"] = whole_file_string
+        analysed_file["theory_file_path"] = theory_file_path
+        analysed_file["working_directory"] = working_directory
+        json.dump(analysed_file, open(saving_path, "w"))
+        
+    except Exception as e:
+        print(e)
+        json.dump({"error": str(e)}, open(error_path, "w"))
+
+    # Clean up
+    del env
+    close_server(server_subprocess_id)
 
 def extract_a_file_from_params(
     jar_path, 
