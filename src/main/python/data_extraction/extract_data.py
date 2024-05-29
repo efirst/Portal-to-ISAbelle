@@ -30,7 +30,8 @@ def analyse_file_string_with_defs(whole_file_string):
     transitions = whole_file_string.split("<\TRANSEP>")
     state_action_proof_level_tuples = list()
     problem_names = list()
-    definition_names = list()
+    # other_names = list()
+    # first_names = {}
     for transition in transitions:
         if not transition:
             continue
@@ -44,6 +45,14 @@ def analyse_file_string_with_defs(whole_file_string):
             definition_names.append(action)
         if (action.startswith("lemma") or action.startswith("theorem")) and not action.startswith("lemmas"):
             problem_names.append(action)
+        # else:
+        #     other_names.append(action)
+        #     l = action.split(" ")
+        #     if l[0] in first_names:
+        #         first_names[l[0]] = first_names[l[0]] + 1
+        #     else:
+        #         first_names[l[0]] = 1
+
         state_action_proof_level_tuples.append((state, action, proof_level, hammer_results))
     return {
         "def_names": definition_names,
@@ -187,10 +196,10 @@ if __name__ == "__main__":
 
     jar_path = args.jar_path
     if jar_path is None:
-        jar_path = "/home/qj213/Portal-to-ISAbelle/target/scala-2.13/PISA-assembly-0.1.jar"
+        jar_path = "/home/ubuntu/Portal-to-ISAbelle/target/scala-2.13/pisa_2.13-0.1.jar"
     isabelle_path = args.isabelle_path
     if isabelle_path is None:
-        isabelle_path = "/home/qj213/Isabelle2022"
+        isabelle_path = "/home/ubuntu/Isabelle2022"
     extraction_file_directory = args.extraction_file_directory
     saving_directory = args.saving_directory
     if not os.path.isdir(saving_directory):
