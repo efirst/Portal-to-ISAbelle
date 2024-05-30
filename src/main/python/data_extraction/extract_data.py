@@ -27,11 +27,11 @@ def analyse_file_string(whole_file_string):
     }
 
 def analyse_file_string_with_defs(whole_file_string):
+    allowable = ["definition", "fun", "primrec", "datatype", "function", "typedecl", "typedef", "type_synonym", "record", "inductive", "coinductive"]
     transitions = whole_file_string.split("<\TRANSEP>")
     state_action_proof_level_tuples = list()
     problem_names = list()
-    # other_names = list()
-    # first_names = {}
+    definition_names = list()
     for transition in transitions:
         if not transition:
             continue
@@ -41,18 +41,12 @@ def analyse_file_string_with_defs(whole_file_string):
         state = state.strip()
         action = action.strip()
         proof_level = int(proof_level.strip())
-        if action.startswith("definition"):
+        starting = action.split(" ")[0]
+        
+        if proof_level == 0 and (starting in allowable):
             definition_names.append(action)
         if (action.startswith("lemma") or action.startswith("theorem")) and not action.startswith("lemmas"):
             problem_names.append(action)
-        # else:
-        #     other_names.append(action)
-        #     l = action.split(" ")
-        #     if l[0] in first_names:
-        #         first_names[l[0]] = first_names[l[0]] + 1
-        #     else:
-        #         first_names[l[0]] = 1
-
         state_action_proof_level_tuples.append((state, action, proof_level, hammer_results))
     return {
         "def_names": definition_names,
