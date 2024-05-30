@@ -1,0 +1,267 @@
+{
+    "def_names": [
+        "datatype bexp = Bc bool | Not bexp | And bexp bexp | Less aexp aexp",
+        "fun bval :: \"bexp \\<Rightarrow> state \\<Rightarrow> bool\" where\n\"bval (Bc v) s = v\" |\n\"bval (Not b) s = (\\<not> bval b s)\" |\n\"bval (And b\\<^sub>1 b\\<^sub>2) s = (bval b\\<^sub>1 s \\<and> bval b\\<^sub>2 s)\" |\n\"bval (Less a\\<^sub>1 a\\<^sub>2) s = (aval a\\<^sub>1 s < aval a\\<^sub>2 s)\"",
+        "fun less :: \"aexp \\<Rightarrow> aexp \\<Rightarrow> bexp\" where\n\"less (N n\\<^sub>1) (N n\\<^sub>2) = Bc(n\\<^sub>1 < n\\<^sub>2)\" |\n\"less a\\<^sub>1 a\\<^sub>2 = Less a\\<^sub>1 a\\<^sub>2\"",
+        "fun \"and\" :: \"bexp \\<Rightarrow> bexp \\<Rightarrow> bexp\" where\n\"and (Bc True) b = b\" |\n\"and b (Bc True) = b\" |\n\"and (Bc False) b = Bc False\" |\n\"and b (Bc False) = Bc False\" |\n\"and b\\<^sub>1 b\\<^sub>2 = And b\\<^sub>1 b\\<^sub>2\"",
+        "fun not :: \"bexp \\<Rightarrow> bexp\" where\n\"not (Bc True) = Bc False\" |\n\"not (Bc False) = Bc True\" |\n\"not b = Not b\"",
+        "fun bsimp :: \"bexp \\<Rightarrow> bexp\" where\n\"bsimp (Bc v) = Bc v\" |\n\"bsimp (Not b) = not(bsimp b)\" |\n\"bsimp (And b\\<^sub>1 b\\<^sub>2) = and (bsimp b\\<^sub>1) (bsimp b\\<^sub>2)\" |\n\"bsimp (Less a\\<^sub>1 a\\<^sub>2) = less (asimp a\\<^sub>1) (asimp a\\<^sub>2)\""
+    ],
+    "problem_names": [
+        "lemma [simp]: \"bval (less a1 a2) s = (aval a1 s < aval a2 s)\"",
+        "lemma bval_and[simp]: \"bval (and b1 b2) s = (bval b1 s \\<and> bval b2 s)\"",
+        "lemma bval_not[simp]: \"bval (not b) s = (\\<not> bval b s)\"",
+        "theorem \"bval (bsimp b) s = bval b s\""
+    ],
+    "translations": [
+        [
+            "",
+            "subsection \"Boolean Expressions\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "theory BExp imports AExp begin",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "datatype bexp = Bc bool | Not bexp | And bexp bexp | Less aexp aexp",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{BExpbvaldef}{1}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun bval :: \"bexp \\<Rightarrow> state \\<Rightarrow> bool\" where\n\"bval (Bc v) s = v\" |\n\"bval (Not b) s = (\\<not> bval b s)\" |\n\"bval (And b\\<^sub>1 b\\<^sub>2) s = (bval b\\<^sub>1 s \\<and> bval b\\<^sub>2 s)\" |\n\"bval (Less a\\<^sub>1 a\\<^sub>2) s = (aval a\\<^sub>1 s < aval a\\<^sub>2 s)\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "value \"bval (Less (V ''x'') (Plus (N 3) (V ''y'')))\n            <''x'' := 3, ''y'' := 1>\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "subsection \"Constant Folding\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text\\<open>Optimizing constructors:\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{BExplessdef}{0}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun less :: \"aexp \\<Rightarrow> aexp \\<Rightarrow> bexp\" where\n\"less (N n\\<^sub>1) (N n\\<^sub>2) = Bc(n\\<^sub>1 < n\\<^sub>2)\" |\n\"less a\\<^sub>1 a\\<^sub>2 = Less a\\<^sub>1 a\\<^sub>2\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "lemma [simp]: \"bval (less a1 a2) s = (aval a1 s < aval a2 s)\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. bval (BExp.less a1 a2) s = (aval a1 s < aval a2 s)",
+            "apply(induction a1 a2 rule: less.induct)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (5 subgoals):\n 1. \\<And>n\\<^sub>1 n\\<^sub>2. bval (BExp.less (N n\\<^sub>1) (N n\\<^sub>2)) s = (aval (N n\\<^sub>1) s < aval (N n\\<^sub>2) s)\n 2. \\<And>v a\\<^sub>2. bval (BExp.less (V v) a\\<^sub>2) s = (aval (V v) s < aval a\\<^sub>2 s)\n 3. \\<And>v va a\\<^sub>2. bval (BExp.less (Plus v va) a\\<^sub>2) s = (aval (Plus v va) s < aval a\\<^sub>2 s)\n 4. \\<And>a\\<^sub>1 v. bval (BExp.less a\\<^sub>1 (V v)) s = (aval a\\<^sub>1 s < aval (V v) s)\n 5. \\<And>a\\<^sub>1 v va. bval (BExp.less a\\<^sub>1 (Plus v va)) s = (aval a\\<^sub>1 s < aval (Plus v va) s)",
+            "apply simp_all",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal:\nNo subgoals!",
+            "done",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{BExpanddef}{2}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun \"and\" :: \"bexp \\<Rightarrow> bexp \\<Rightarrow> bexp\" where\n\"and (Bc True) b = b\" |\n\"and b (Bc True) = b\" |\n\"and (Bc False) b = Bc False\" |\n\"and b (Bc False) = Bc False\" |\n\"and b\\<^sub>1 b\\<^sub>2 = And b\\<^sub>1 b\\<^sub>2\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "lemma bval_and[simp]: \"bval (and b1 b2) s = (bval b1 s \\<and> bval b2 s)\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. bval (BExp.and b1 b2) s = (bval b1 s \\<and> bval b2 s)",
+            "apply(induction b1 b2 rule: and.induct)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (21 subgoals):\n 1. \\<And>b. bval (BExp.and (Bc True) b) s = (bval (Bc True) s \\<and> bval b s)\n 2. bval (BExp.and (Bc False) (Bc True)) s = (bval (Bc False) s \\<and> bval (Bc True) s)\n 3. \\<And>v. bval (BExp.and (bexp.Not v) (Bc True)) s = (bval (bexp.Not v) s \\<and> bval (Bc True) s)\n 4. \\<And>v va. bval (BExp.and (And v va) (Bc True)) s = (bval (And v va) s \\<and> bval (Bc True) s)\n 5. \\<And>v va. bval (BExp.and (Less v va) (Bc True)) s = (bval (Less v va) s \\<and> bval (Bc True) s)\n 6. bval (BExp.and (Bc False) (Bc False)) s = (bval (Bc False) s \\<and> bval (Bc False) s)\n 7. \\<And>v. bval (BExp.and (Bc False) (bexp.Not v)) s = (bval (Bc False) s \\<and> bval (bexp.Not v) s)\n 8. \\<And>v va. bval (BExp.and (Bc False) (And v va)) s = (bval (Bc False) s \\<and> bval (And v va) s)\n 9. \\<And>v va. bval (BExp.and (Bc False) (Less v va)) s = (bval (Bc False) s \\<and> bval (Less v va) s)\n 10. \\<And>v. bval (BExp.and (bexp.Not v) (Bc False)) s = (bval (bexp.Not v) s \\<and> bval (Bc False) s)\nA total of 21 subgoals...",
+            "apply simp_all",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal:\nNo subgoals!",
+            "done",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{BExpnotdef}{2}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun not :: \"bexp \\<Rightarrow> bexp\" where\n\"not (Bc True) = Bc False\" |\n\"not (Bc False) = Bc True\" |\n\"not b = Not b\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "lemma bval_not[simp]: \"bval (not b) s = (\\<not> bval b s)\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. bval (BExp.not b) s = (\\<not> bval b s)",
+            "apply(induction b rule: not.induct)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (5 subgoals):\n 1. bval (BExp.not (Bc True)) s = (\\<not> bval (Bc True) s)\n 2. bval (BExp.not (Bc False)) s = (\\<not> bval (Bc False) s)\n 3. \\<And>v. bval (BExp.not (bexp.Not v)) s = (\\<not> bval (bexp.Not v) s)\n 4. \\<And>v va. bval (BExp.not (And v va)) s = (\\<not> bval (And v va) s)\n 5. \\<And>v va. bval (BExp.not (Less v va)) s = (\\<not> bval (Less v va) s)",
+            "apply simp_all",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal:\nNo subgoals!",
+            "done",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "text\\<open>Now the overall optimizer:\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{BExpbsimpdef}{0}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun bsimp :: \"bexp \\<Rightarrow> bexp\" where\n\"bsimp (Bc v) = Bc v\" |\n\"bsimp (Not b) = not(bsimp b)\" |\n\"bsimp (And b\\<^sub>1 b\\<^sub>2) = and (bsimp b\\<^sub>1) (bsimp b\\<^sub>2)\" |\n\"bsimp (Less a\\<^sub>1 a\\<^sub>2) = less (asimp a\\<^sub>1) (asimp a\\<^sub>2)\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "value \"bsimp (And (Less (N 0) (N 1)) b)\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "value \"bsimp (And (Less (N 1) (N 0)) (Bc True))\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "theorem \"bval (bsimp b) s = bval b s\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. bval (bsimp b) s = bval b s",
+            "apply(induction b)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (4 subgoals):\n 1. \\<And>x. bval (bsimp (Bc x)) s = bval (Bc x) s\n 2. \\<And>b. bval (bsimp b) s = bval b s \\<Longrightarrow> bval (bsimp (bexp.Not b)) s = bval (bexp.Not b) s\n 3. \\<And>b1 b2. \\<lbrakk>bval (bsimp b1) s = bval b1 s; bval (bsimp b2) s = bval b2 s\\<rbrakk> \\<Longrightarrow> bval (bsimp (And b1 b2)) s = bval (And b1 b2) s\n 4. \\<And>x1a x2a. bval (bsimp (Less x1a x2a)) s = bval (Less x1a x2a) s",
+            "apply simp_all",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal:\nNo subgoals!",
+            "done",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "end",
+            0,
+            "NA"
+        ]
+    ],
+    "whole_thing": "<\\STATESEP>subsection \"Boolean Expressions\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>theory BExp imports AExp begin<\\STATESEP>0<\\TRANSEP><\\STATESEP>datatype bexp = Bc bool | Not bexp | And bexp bexp | Less aexp aexp<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{BExpbvaldef}{1}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun bval :: \"bexp \\<Rightarrow> state \\<Rightarrow> bool\" where\n\"bval (Bc v) s = v\" |\n\"bval (Not b) s = (\\<not> bval b s)\" |\n\"bval (And b\\<^sub>1 b\\<^sub>2) s = (bval b\\<^sub>1 s \\<and> bval b\\<^sub>2 s)\" |\n\"bval (Less a\\<^sub>1 a\\<^sub>2) s = (aval a\\<^sub>1 s < aval a\\<^sub>2 s)\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>value \"bval (Less (V ''x'') (Plus (N 3) (V ''y'')))\n            <''x'' := 3, ''y'' := 1>\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>subsection \"Constant Folding\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text\\<open>Optimizing constructors:\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{BExplessdef}{0}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun less :: \"aexp \\<Rightarrow> aexp \\<Rightarrow> bexp\" where\n\"less (N n\\<^sub>1) (N n\\<^sub>2) = Bc(n\\<^sub>1 < n\\<^sub>2)\" |\n\"less a\\<^sub>1 a\\<^sub>2 = Less a\\<^sub>1 a\\<^sub>2\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>lemma [simp]: \"bval (less a1 a2) s = (aval a1 s < aval a2 s)\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. bval (BExp.less a1 a2) s = (aval a1 s < aval a2 s)<\\STATESEP>apply(induction a1 a2 rule: less.induct)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal (5 subgoals):\n 1. \\<And>n\\<^sub>1 n\\<^sub>2. bval (BExp.less (N n\\<^sub>1) (N n\\<^sub>2)) s = (aval (N n\\<^sub>1) s < aval (N n\\<^sub>2) s)\n 2. \\<And>v a\\<^sub>2. bval (BExp.less (V v) a\\<^sub>2) s = (aval (V v) s < aval a\\<^sub>2 s)\n 3. \\<And>v va a\\<^sub>2. bval (BExp.less (Plus v va) a\\<^sub>2) s = (aval (Plus v va) s < aval a\\<^sub>2 s)\n 4. \\<And>a\\<^sub>1 v. bval (BExp.less a\\<^sub>1 (V v)) s = (aval a\\<^sub>1 s < aval (V v) s)\n 5. \\<And>a\\<^sub>1 v va. bval (BExp.less a\\<^sub>1 (Plus v va)) s = (aval a\\<^sub>1 s < aval (Plus v va) s)<\\STATESEP>apply simp_all<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal:\nNo subgoals!<\\STATESEP>done<\\STATESEP>1<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{BExpanddef}{2}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun \"and\" :: \"bexp \\<Rightarrow> bexp \\<Rightarrow> bexp\" where\n\"and (Bc True) b = b\" |\n\"and b (Bc True) = b\" |\n\"and (Bc False) b = Bc False\" |\n\"and b (Bc False) = Bc False\" |\n\"and b\\<^sub>1 b\\<^sub>2 = And b\\<^sub>1 b\\<^sub>2\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>lemma bval_and[simp]: \"bval (and b1 b2) s = (bval b1 s \\<and> bval b2 s)\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. bval (BExp.and b1 b2) s = (bval b1 s \\<and> bval b2 s)<\\STATESEP>apply(induction b1 b2 rule: and.induct)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal (21 subgoals):\n 1. \\<And>b. bval (BExp.and (Bc True) b) s = (bval (Bc True) s \\<and> bval b s)\n 2. bval (BExp.and (Bc False) (Bc True)) s = (bval (Bc False) s \\<and> bval (Bc True) s)\n 3. \\<And>v. bval (BExp.and (bexp.Not v) (Bc True)) s = (bval (bexp.Not v) s \\<and> bval (Bc True) s)\n 4. \\<And>v va. bval (BExp.and (And v va) (Bc True)) s = (bval (And v va) s \\<and> bval (Bc True) s)\n 5. \\<And>v va. bval (BExp.and (Less v va) (Bc True)) s = (bval (Less v va) s \\<and> bval (Bc True) s)\n 6. bval (BExp.and (Bc False) (Bc False)) s = (bval (Bc False) s \\<and> bval (Bc False) s)\n 7. \\<And>v. bval (BExp.and (Bc False) (bexp.Not v)) s = (bval (Bc False) s \\<and> bval (bexp.Not v) s)\n 8. \\<And>v va. bval (BExp.and (Bc False) (And v va)) s = (bval (Bc False) s \\<and> bval (And v va) s)\n 9. \\<And>v va. bval (BExp.and (Bc False) (Less v va)) s = (bval (Bc False) s \\<and> bval (Less v va) s)\n 10. \\<And>v. bval (BExp.and (bexp.Not v) (Bc False)) s = (bval (bexp.Not v) s \\<and> bval (Bc False) s)\nA total of 21 subgoals...<\\STATESEP>apply simp_all<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal:\nNo subgoals!<\\STATESEP>done<\\STATESEP>1<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{BExpnotdef}{2}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun not :: \"bexp \\<Rightarrow> bexp\" where\n\"not (Bc True) = Bc False\" |\n\"not (Bc False) = Bc True\" |\n\"not b = Not b\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>lemma bval_not[simp]: \"bval (not b) s = (\\<not> bval b s)\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. bval (BExp.not b) s = (\\<not> bval b s)<\\STATESEP>apply(induction b rule: not.induct)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal (5 subgoals):\n 1. bval (BExp.not (Bc True)) s = (\\<not> bval (Bc True) s)\n 2. bval (BExp.not (Bc False)) s = (\\<not> bval (Bc False) s)\n 3. \\<And>v. bval (BExp.not (bexp.Not v)) s = (\\<not> bval (bexp.Not v) s)\n 4. \\<And>v va. bval (BExp.not (And v va)) s = (\\<not> bval (And v va) s)\n 5. \\<And>v va. bval (BExp.not (Less v va)) s = (\\<not> bval (Less v va) s)<\\STATESEP>apply simp_all<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal:\nNo subgoals!<\\STATESEP>done<\\STATESEP>1<\\TRANSEP><\\STATESEP>text\\<open>Now the overall optimizer:\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{BExpbsimpdef}{0}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun bsimp :: \"bexp \\<Rightarrow> bexp\" where\n\"bsimp (Bc v) = Bc v\" |\n\"bsimp (Not b) = not(bsimp b)\" |\n\"bsimp (And b\\<^sub>1 b\\<^sub>2) = and (bsimp b\\<^sub>1) (bsimp b\\<^sub>2)\" |\n\"bsimp (Less a\\<^sub>1 a\\<^sub>2) = less (asimp a\\<^sub>1) (asimp a\\<^sub>2)\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>value \"bsimp (And (Less (N 0) (N 1)) b)\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>value \"bsimp (And (Less (N 1) (N 0)) (Bc True))\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>theorem \"bval (bsimp b) s = bval b s\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. bval (bsimp b) s = bval b s<\\STATESEP>apply(induction b)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal (4 subgoals):\n 1. \\<And>x. bval (bsimp (Bc x)) s = bval (Bc x) s\n 2. \\<And>b. bval (bsimp b) s = bval b s \\<Longrightarrow> bval (bsimp (bexp.Not b)) s = bval (bexp.Not b) s\n 3. \\<And>b1 b2. \\<lbrakk>bval (bsimp b1) s = bval b1 s; bval (bsimp b2) s = bval b2 s\\<rbrakk> \\<Longrightarrow> bval (bsimp (And b1 b2)) s = bval (And b1 b2) s\n 4. \\<And>x1a x2a. bval (bsimp (Less x1a x2a)) s = bval (Less x1a x2a) s<\\STATESEP>apply simp_all<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal:\nNo subgoals!<\\STATESEP>done<\\STATESEP>1<\\TRANSEP><\\STATESEP>end<\\STATESEP>0<\\TRANSEP>",
+    "theory_file_path": "/home/ubuntu/Isabelle2022/src/HOL/IMP/BExp.thy",
+    "working_directory": "/home/ubuntu/Isabelle2022/src/HOL/IMP"
+}

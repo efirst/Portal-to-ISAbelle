@@ -1,0 +1,318 @@
+{
+    "def_names": [
+        "type_synonym vname = string",
+        "type_synonym val = int",
+        "type_synonym state = \"vname \\<Rightarrow> val\"",
+        "datatype aexp = N int | V vname | Plus aexp aexp",
+        "fun aval :: \"aexp \\<Rightarrow> state \\<Rightarrow> val\" where\n\"aval (N n) s = n\" |\n\"aval (V x) s = s x\" |\n\"aval (Plus a\\<^sub>1 a\\<^sub>2) s = aval a\\<^sub>1 s + aval a\\<^sub>2 s\"",
+        "definition null_state (\"<>\") where\n  \"null_state \\<equiv> \\<lambda>x. 0\"",
+        "fun asimp_const :: \"aexp \\<Rightarrow> aexp\" where\n\"asimp_const (N n) = N n\" |\n\"asimp_const (V x) = V x\" |\n\"asimp_const (Plus a\\<^sub>1 a\\<^sub>2) =\n  (case (asimp_const a\\<^sub>1, asimp_const a\\<^sub>2) of\n    (N n\\<^sub>1, N n\\<^sub>2) \\<Rightarrow> N(n\\<^sub>1+n\\<^sub>2) |\n    (b\\<^sub>1,b\\<^sub>2) \\<Rightarrow> Plus b\\<^sub>1 b\\<^sub>2)\"",
+        "fun plus :: \"aexp \\<Rightarrow> aexp \\<Rightarrow> aexp\" where\n\"plus (N i\\<^sub>1) (N i\\<^sub>2) = N(i\\<^sub>1+i\\<^sub>2)\" |\n\"plus (N i) a = (if i=0 then a else Plus (N i) a)\" |\n\"plus a (N i) = (if i=0 then a else Plus a (N i))\" |\n\"plus a\\<^sub>1 a\\<^sub>2 = Plus a\\<^sub>1 a\\<^sub>2\"",
+        "fun asimp :: \"aexp \\<Rightarrow> aexp\" where\n\"asimp (N n) = N n\" |\n\"asimp (V x) = V x\" |\n\"asimp (Plus a\\<^sub>1 a\\<^sub>2) = plus (asimp a\\<^sub>1) (asimp a\\<^sub>2)\""
+    ],
+    "problem_names": [
+        "lemma \"<a := 1, b := 2> = (<> (a := 1)) (b := (2::int))\"",
+        "theorem aval_asimp_const:\n  \"aval (asimp_const a) s = aval a s\"",
+        "lemma aval_plus[simp]:\n  \"aval (plus a1 a2) s = aval a1 s + aval a2 s\"",
+        "theorem aval_asimp[simp]:\n  \"aval (asimp a) s = aval a s\""
+    ],
+    "translations": [
+        [
+            "",
+            "section \"Arithmetic and Boolean Expressions\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "subsection \"Arithmetic Expressions\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "theory AExp imports Main begin",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "type_synonym vname = string",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "type_synonym val = int",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "type_synonym state = \"vname \\<Rightarrow> val\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{AExpaexpdef}{2}{1}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "datatype aexp = N int | V vname | Plus aexp aexp",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{AExpavaldef}{1}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun aval :: \"aexp \\<Rightarrow> state \\<Rightarrow> val\" where\n\"aval (N n) s = n\" |\n\"aval (V x) s = s x\" |\n\"aval (Plus a\\<^sub>1 a\\<^sub>2) s = aval a\\<^sub>1 s + aval a\\<^sub>2 s\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "value \"aval (Plus (V ''x'') (N 5)) (\\<lambda>x. if x = ''x'' then 7 else 0)\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "value \"aval (Plus (V ''x'') (N 5)) ((\\<lambda>x. 0) (''x'':= 7))\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "definition null_state (\"<>\") where\n  \"null_state \\<equiv> \\<lambda>x. 0\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "syntax \n  \"_State\" :: \"updbinds => 'a\" (\"<_>\")",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "translations\n  \"_State ms\" == \"_Update <> ms\"\n  \"_State (_updbinds b bs)\" <= \"_Update (_State b) bs\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "lemma \"<a := 1, b := 2> = (<> (a := 1)) (b := (2::int))\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. <a := 1, b := 2> = <a := 1, b := 2>",
+            "by (rule refl)",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "value \"aval (Plus (V ''x'') (N 5)) <''x'' := 7>\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "value \"aval (Plus (V ''x'') (N 5)) <''y'' := 7>\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text\\<open>Note that this \\<open><\\<dots>>\\<close> syntax works for any function space\n\\<open>\\<tau>\\<^sub>1 \\<Rightarrow> \\<tau>\\<^sub>2\\<close> where \\<open>\\<tau>\\<^sub>2\\<close> has a \\<open>0\\<close>.\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "subsection \"Constant Folding\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text\\<open>Evaluate constant subsexpressions:\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{AExpasimpconstdef}{0}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun asimp_const :: \"aexp \\<Rightarrow> aexp\" where\n\"asimp_const (N n) = N n\" |\n\"asimp_const (V x) = V x\" |\n\"asimp_const (Plus a\\<^sub>1 a\\<^sub>2) =\n  (case (asimp_const a\\<^sub>1, asimp_const a\\<^sub>2) of\n    (N n\\<^sub>1, N n\\<^sub>2) \\<Rightarrow> N(n\\<^sub>1+n\\<^sub>2) |\n    (b\\<^sub>1,b\\<^sub>2) \\<Rightarrow> Plus b\\<^sub>1 b\\<^sub>2)\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "theorem aval_asimp_const:\n  \"aval (asimp_const a) s = aval a s\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. aval (asimp_const a) s = aval a s",
+            "apply(induction a)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (3 subgoals):\n 1. \\<And>x. aval (asimp_const (N x)) s = aval (N x) s\n 2. \\<And>x. aval (asimp_const (V x)) s = aval (V x) s\n 3. \\<And>a1 a2. \\<lbrakk>aval (asimp_const a1) s = aval a1 s; aval (asimp_const a2) s = aval a2 s\\<rbrakk> \\<Longrightarrow> aval (asimp_const (Plus a1 a2)) s = aval (Plus a1 a2) s",
+            "apply (auto split: aexp.split)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal:\nNo subgoals!",
+            "done",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "text\\<open>Now we also eliminate all occurrences 0 in additions. The standard\nmethod: optimized versions of the constructors:\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{AExpplusdef}{0}{2}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun plus :: \"aexp \\<Rightarrow> aexp \\<Rightarrow> aexp\" where\n\"plus (N i\\<^sub>1) (N i\\<^sub>2) = N(i\\<^sub>1+i\\<^sub>2)\" |\n\"plus (N i) a = (if i=0 then a else Plus (N i) a)\" |\n\"plus a (N i) = (if i=0 then a else Plus a (N i))\" |\n\"plus a\\<^sub>1 a\\<^sub>2 = Plus a\\<^sub>1 a\\<^sub>2\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "lemma aval_plus[simp]:\n  \"aval (plus a1 a2) s = aval a1 s + aval a2 s\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. aval (AExp.plus a1 a2) s = aval a1 s + aval a2 s",
+            "apply(induction a1 a2 rule: plus.induct)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (13 subgoals):\n 1. \\<And>i\\<^sub>1 i\\<^sub>2. aval (AExp.plus (N i\\<^sub>1) (N i\\<^sub>2)) s = aval (N i\\<^sub>1) s + aval (N i\\<^sub>2) s\n 2. \\<And>i v. aval (AExp.plus (N i) (V v)) s = aval (N i) s + aval (V v) s\n 3. \\<And>i v va. aval (AExp.plus (N i) (Plus v va)) s = aval (N i) s + aval (Plus v va) s\n 4. \\<And>v i. aval (AExp.plus (V v) (N i)) s = aval (V v) s + aval (N i) s\n 5. \\<And>v va i. aval (AExp.plus (Plus v va) (N i)) s = aval (Plus v va) s + aval (N i) s\n 6. \\<And>v va. aval (AExp.plus (V v) (V va)) s = aval (V v) s + aval (V va) s\n 7. \\<And>v va vb. aval (AExp.plus (V v) (Plus va vb)) s = aval (V v) s + aval (Plus va vb) s\n 8. \\<And>v va vb. aval (AExp.plus (Plus v va) (V vb)) s = aval (Plus v va) s + aval (V vb) s\n 9. \\<And>v va vb vc. aval (AExp.plus (Plus v va) (Plus vb vc)) s = aval (Plus v va) s + aval (Plus vb vc) s\n 10. \\<And>va v. aval (AExp.plus (V va) (V v)) s = aval (V va) s + aval (V v) s\nA total of 13 subgoals...",
+            "apply simp_all",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal:\nNo subgoals!",
+            "done",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>\\snip{AExpasimpdef}{2}{0}{%\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "fun asimp :: \"aexp \\<Rightarrow> aexp\" where\n\"asimp (N n) = N n\" |\n\"asimp (V x) = V x\" |\n\"asimp (Plus a\\<^sub>1 a\\<^sub>2) = plus (asimp a\\<^sub>1) (asimp a\\<^sub>2)\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text_raw\\<open>}%endsnip\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "text\\<open>Note that in \\<^const>\\<open>asimp_const\\<close> the optimized constructor was\ninlined. Making it a separate function \\<^const>\\<open>plus\\<close> improves modularity of\nthe code and the proofs.\\<close>",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "value \"asimp (Plus (Plus (N 0) (N 0)) (Plus (V ''x'') (N 0)))\"",
+            0,
+            "NA"
+        ],
+        [
+            "",
+            "theorem aval_asimp[simp]:\n  \"aval (asimp a) s = aval a s\"",
+            0,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (1 subgoal):\n 1. aval (asimp a) s = aval a s",
+            "apply(induction a)",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal (3 subgoals):\n 1. \\<And>x. aval (asimp (N x)) s = aval (N x) s\n 2. \\<And>x. aval (asimp (V x)) s = aval (V x) s\n 3. \\<And>a1 a2. \\<lbrakk>aval (asimp a1) s = aval a1 s; aval (asimp a2) s = aval a2 s\\<rbrakk> \\<Longrightarrow> aval (asimp (Plus a1 a2)) s = aval (Plus a1 a2) s",
+            "apply simp_all",
+            1,
+            "NA"
+        ],
+        [
+            "proof (prove)\ngoal:\nNo subgoals!",
+            "done",
+            1,
+            "NA"
+        ],
+        [
+            "",
+            "end",
+            0,
+            "NA"
+        ]
+    ],
+    "whole_thing": "<\\STATESEP>section \"Arithmetic and Boolean Expressions\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>subsection \"Arithmetic Expressions\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>theory AExp imports Main begin<\\STATESEP>0<\\TRANSEP><\\STATESEP>type_synonym vname = string<\\STATESEP>0<\\TRANSEP><\\STATESEP>type_synonym val = int<\\STATESEP>0<\\TRANSEP><\\STATESEP>type_synonym state = \"vname \\<Rightarrow> val\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{AExpaexpdef}{2}{1}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>datatype aexp = N int | V vname | Plus aexp aexp<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{AExpavaldef}{1}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun aval :: \"aexp \\<Rightarrow> state \\<Rightarrow> val\" where\n\"aval (N n) s = n\" |\n\"aval (V x) s = s x\" |\n\"aval (Plus a\\<^sub>1 a\\<^sub>2) s = aval a\\<^sub>1 s + aval a\\<^sub>2 s\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>value \"aval (Plus (V ''x'') (N 5)) (\\<lambda>x. if x = ''x'' then 7 else 0)\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>value \"aval (Plus (V ''x'') (N 5)) ((\\<lambda>x. 0) (''x'':= 7))\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>definition null_state (\"<>\") where\n  \"null_state \\<equiv> \\<lambda>x. 0\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>syntax \n  \"_State\" :: \"updbinds => 'a\" (\"<_>\")<\\STATESEP>0<\\TRANSEP><\\STATESEP>translations\n  \"_State ms\" == \"_Update <> ms\"\n  \"_State (_updbinds b bs)\" <= \"_Update (_State b) bs\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>lemma \"<a := 1, b := 2> = (<> (a := 1)) (b := (2::int))\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. <a := 1, b := 2> = <a := 1, b := 2><\\STATESEP>by (rule refl)<\\STATESEP>1<\\TRANSEP><\\STATESEP>value \"aval (Plus (V ''x'') (N 5)) <''x'' := 7>\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>value \"aval (Plus (V ''x'') (N 5)) <''y'' := 7>\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text\\<open>Note that this \\<open><\\<dots>>\\<close> syntax works for any function space\n\\<open>\\<tau>\\<^sub>1 \\<Rightarrow> \\<tau>\\<^sub>2\\<close> where \\<open>\\<tau>\\<^sub>2\\<close> has a \\<open>0\\<close>.\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>subsection \"Constant Folding\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text\\<open>Evaluate constant subsexpressions:\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{AExpasimpconstdef}{0}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun asimp_const :: \"aexp \\<Rightarrow> aexp\" where\n\"asimp_const (N n) = N n\" |\n\"asimp_const (V x) = V x\" |\n\"asimp_const (Plus a\\<^sub>1 a\\<^sub>2) =\n  (case (asimp_const a\\<^sub>1, asimp_const a\\<^sub>2) of\n    (N n\\<^sub>1, N n\\<^sub>2) \\<Rightarrow> N(n\\<^sub>1+n\\<^sub>2) |\n    (b\\<^sub>1,b\\<^sub>2) \\<Rightarrow> Plus b\\<^sub>1 b\\<^sub>2)\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>theorem aval_asimp_const:\n  \"aval (asimp_const a) s = aval a s\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. aval (asimp_const a) s = aval a s<\\STATESEP>apply(induction a)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal (3 subgoals):\n 1. \\<And>x. aval (asimp_const (N x)) s = aval (N x) s\n 2. \\<And>x. aval (asimp_const (V x)) s = aval (V x) s\n 3. \\<And>a1 a2. \\<lbrakk>aval (asimp_const a1) s = aval a1 s; aval (asimp_const a2) s = aval a2 s\\<rbrakk> \\<Longrightarrow> aval (asimp_const (Plus a1 a2)) s = aval (Plus a1 a2) s<\\STATESEP>apply (auto split: aexp.split)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal:\nNo subgoals!<\\STATESEP>done<\\STATESEP>1<\\TRANSEP><\\STATESEP>text\\<open>Now we also eliminate all occurrences 0 in additions. The standard\nmethod: optimized versions of the constructors:\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{AExpplusdef}{0}{2}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun plus :: \"aexp \\<Rightarrow> aexp \\<Rightarrow> aexp\" where\n\"plus (N i\\<^sub>1) (N i\\<^sub>2) = N(i\\<^sub>1+i\\<^sub>2)\" |\n\"plus (N i) a = (if i=0 then a else Plus (N i) a)\" |\n\"plus a (N i) = (if i=0 then a else Plus a (N i))\" |\n\"plus a\\<^sub>1 a\\<^sub>2 = Plus a\\<^sub>1 a\\<^sub>2\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>lemma aval_plus[simp]:\n  \"aval (plus a1 a2) s = aval a1 s + aval a2 s\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. aval (AExp.plus a1 a2) s = aval a1 s + aval a2 s<\\STATESEP>apply(induction a1 a2 rule: plus.induct)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal (13 subgoals):\n 1. \\<And>i\\<^sub>1 i\\<^sub>2. aval (AExp.plus (N i\\<^sub>1) (N i\\<^sub>2)) s = aval (N i\\<^sub>1) s + aval (N i\\<^sub>2) s\n 2. \\<And>i v. aval (AExp.plus (N i) (V v)) s = aval (N i) s + aval (V v) s\n 3. \\<And>i v va. aval (AExp.plus (N i) (Plus v va)) s = aval (N i) s + aval (Plus v va) s\n 4. \\<And>v i. aval (AExp.plus (V v) (N i)) s = aval (V v) s + aval (N i) s\n 5. \\<And>v va i. aval (AExp.plus (Plus v va) (N i)) s = aval (Plus v va) s + aval (N i) s\n 6. \\<And>v va. aval (AExp.plus (V v) (V va)) s = aval (V v) s + aval (V va) s\n 7. \\<And>v va vb. aval (AExp.plus (V v) (Plus va vb)) s = aval (V v) s + aval (Plus va vb) s\n 8. \\<And>v va vb. aval (AExp.plus (Plus v va) (V vb)) s = aval (Plus v va) s + aval (V vb) s\n 9. \\<And>v va vb vc. aval (AExp.plus (Plus v va) (Plus vb vc)) s = aval (Plus v va) s + aval (Plus vb vc) s\n 10. \\<And>va v. aval (AExp.plus (V va) (V v)) s = aval (V va) s + aval (V v) s\nA total of 13 subgoals...<\\STATESEP>apply simp_all<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal:\nNo subgoals!<\\STATESEP>done<\\STATESEP>1<\\TRANSEP><\\STATESEP>text_raw\\<open>\\snip{AExpasimpdef}{2}{0}{%\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>fun asimp :: \"aexp \\<Rightarrow> aexp\" where\n\"asimp (N n) = N n\" |\n\"asimp (V x) = V x\" |\n\"asimp (Plus a\\<^sub>1 a\\<^sub>2) = plus (asimp a\\<^sub>1) (asimp a\\<^sub>2)\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>text_raw\\<open>}%endsnip\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>text\\<open>Note that in \\<^const>\\<open>asimp_const\\<close> the optimized constructor was\ninlined. Making it a separate function \\<^const>\\<open>plus\\<close> improves modularity of\nthe code and the proofs.\\<close><\\STATESEP>0<\\TRANSEP><\\STATESEP>value \"asimp (Plus (Plus (N 0) (N 0)) (Plus (V ''x'') (N 0)))\"<\\STATESEP>0<\\TRANSEP><\\STATESEP>theorem aval_asimp[simp]:\n  \"aval (asimp a) s = aval a s\"<\\STATESEP>0<\\TRANSEP>proof (prove)\ngoal (1 subgoal):\n 1. aval (asimp a) s = aval a s<\\STATESEP>apply(induction a)<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal (3 subgoals):\n 1. \\<And>x. aval (asimp (N x)) s = aval (N x) s\n 2. \\<And>x. aval (asimp (V x)) s = aval (V x) s\n 3. \\<And>a1 a2. \\<lbrakk>aval (asimp a1) s = aval a1 s; aval (asimp a2) s = aval a2 s\\<rbrakk> \\<Longrightarrow> aval (asimp (Plus a1 a2)) s = aval (Plus a1 a2) s<\\STATESEP>apply simp_all<\\STATESEP>1<\\TRANSEP>proof (prove)\ngoal:\nNo subgoals!<\\STATESEP>done<\\STATESEP>1<\\TRANSEP><\\STATESEP>end<\\STATESEP>0<\\TRANSEP>",
+    "theory_file_path": "/home/ubuntu/Isabelle2022/src/HOL/IMP/AExp.thy",
+    "working_directory": "/home/ubuntu/Isabelle2022/src/HOL/IMP"
+}
