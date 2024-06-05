@@ -123,5 +123,28 @@ if __name__ == '__main__':
     #     print(f"Premise name: {premise}")
     #     print(f"Premise defn: {premise_defn}")
 
-    # extract_a_file_from_params(
-    test()
+    output_data_path = "/home/ubuntu/Portal-to-ISAbelle/extracted"
+    identifier = "Signature_Groebner"
+
+    jar_path = "/home/ubuntu/Portal-to-ISAbelle/target/scala-2.13/pisa_2.13-0.1.jar"
+    isabelle_path = "/home/ubuntu/Isabelle2022"
+    # working_directory = "/home/ubuntu/Isabelle2022/src/HOL/IMP"
+    # theory_file_path = "/home/ubuntu/Isabelle2022/src/HOL/IMP/AExp.thy"
+    working_directory = "/home/ubuntu/afp-2022-12-06/thys/Signature_Groebner"
+    theory_file_path = "/home/ubuntu/afp-2022-12-06/thys/Signature_Groebner/Signature_Groebner.thy"
+    saving_path = f"{output_data_path}/{identifier}_output.json"
+    error_path = f"{output_data_path}/{identifier}_error.json"
+    sub_saving_path = f"{output_data_path}/{identifier}_subout.json"
+    sub_error_path = f"{output_data_path}/{identifier}_suberr.json"
+
+    extract_test_file_from_params(
+        jar_path, 
+        isabelle_path, 
+        working_directory, 
+        theory_file_path,
+        saving_path, 
+        error_path,
+        sub_saving_path,
+        sub_error_path
+    )
+    # test()
