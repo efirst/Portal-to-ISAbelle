@@ -1,5 +1,6 @@
 import json
 import multiprocessing as mp
+import os
 
 from pisa_client import initialise_env
 from utils.pisa_server_control import start_server, close_server
@@ -29,7 +30,7 @@ def analyse_file_string(whole_file_string):
 def analyse_file_string_with_defs(whole_file_string):
     allowable = ["definition", "fun", "primrec", "datatype", "function", "typedecl", "typedef", "type_synonym", "record", "inductive", "coinductive"]
     transitions = whole_file_string.split("<\TRANSEP>")
-    state_action_proof_level_tuples = list()
+    # state_action_proof_level_tuples = list()
     problem_names = list()
     definition_names = list()
     for transition in transitions:
@@ -47,11 +48,11 @@ def analyse_file_string_with_defs(whole_file_string):
             definition_names.append(action)
         if (action.startswith("lemma") or action.startswith("theorem")) and not action.startswith("lemmas"):
             problem_names.append(action)
-        state_action_proof_level_tuples.append((state, action, proof_level, hammer_results))
+        # state_action_proof_level_tuples.append((state, action, proof_level, hammer_results))
     return {
         "def_names": definition_names,
         "problem_names": problem_names,
-        "translations": state_action_proof_level_tuples
+        # "translations": state_action_proof_level_tuples
     }
 
 def extract_test_file_from_params(
@@ -62,12 +63,16 @@ def extract_test_file_from_params(
     saving_path, 
     error_path,
     sub_saving_path,
-    sub_error_path
+    sub_error_path,
+    resume=False
 ):
     env = None
 
-    # if os.path.isfile(saving_path):
-    #     return
+    if os.path.isfile(saving_path):
+        if resume:
+            return
+        # delete the file
+        os.remove(saving_path)
     try:
         # Figure out the parameters to start the server
         rank = 0
@@ -88,6 +93,9 @@ def extract_test_file_from_params(
         analysed_file["whole_thing"] = whole_file_string
         analysed_file["theory_file_path"] = theory_file_path
         analysed_file["working_directory"] = working_directory
+
+        analysed_file["local_defs"] = local_defs
+
         json.dump(analysed_file, open(saving_path, "w"))
         
     except Exception as e:

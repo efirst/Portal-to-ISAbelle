@@ -4,7 +4,7 @@ EXITCODE=0
 
 while [ "$EXITCODE" -eq 0 ]; do
 
-    python3 src/main/python/initial_parse.py --all_files /home/ubuntu/Portal-to-ISAbelle/all_files.json --current /home/ubuntu/Portal-to-ISAbelle/current.json & PID0=$!
+    python3 src/main/python/initial_parse.py --all_files /pisa/all_files.json --current /pisa/current.json --resume & PID0=$!
     wait $PID0
     EXITCODE=$?
     echo $EXITCODE

@@ -26,3 +26,7 @@ def get_premises_from_proof(env, proof_string):
   #   print("~"*80)
   #   print(f"Premise name: {premise}")
   #   print(f"Premise defn: {premise_defn}")
+  
+def get_module_name(filename):
+    if filename.endswith(".thy"):
+        return filename.split("/")[-1].split(".")[0]

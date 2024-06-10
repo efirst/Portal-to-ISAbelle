@@ -28,9 +28,9 @@ def test():
     identifier = "testing"
     
     jar_path = "/pisa/target/scala-2.13/pisa_2.13-0.1.jar"
-    isabelle_path = "/pisa/Isabelle2022"
-    working_directory = "/pisa/Isabelle2022/src/HOL/IMP"
-    theory_file_path = "/pisa/Isabelle2022/src/HOL/IMP/BExp.thy"
+    isabelle_path = "/isabelle"
+    working_directory = "/isabelle/src/HOL/IMP"
+    theory_file_path = "/isabelle/src/HOL/IMP/BExp.thy"
     saving_path = f"{output_data_path}/{identifier}_output.json"
     error_path = f"{output_data_path}/{identifier}_error.json"
     sub_saving_path = f"{output_data_path}/{identifier}_subout.json"
@@ -90,9 +90,9 @@ def test():
 if __name__ == '__main__':
     # env = initialise_env(
     #     8000, 
-    #     "/pisa/Isabelle2022", 
-    #     "/pisa/Isabelle2022/src/HOL/Computational_Algebra/Primes.thy",
-    #     "/pisa/Isabelle2022/src/HOL/Computational_Algebra"
+    #     "/isabelle", 
+    #     "/isabelle/src/HOL/Computational_Algebra/Primes.thy",
+    #     "/isabelle/src/HOL/Computational_Algebra"
     # )
     # env = initialise_env(
     #     8000, 
