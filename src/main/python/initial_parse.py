@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
 
     jar_path = "/pisa/target/scala-2.13/pisa_2.13-0.1.jar"
-    isabelle_dir = "/isabelle"
+    isabelle_dir = "/pisa/Isabelle2022"
     output_dir = "/pisa/extracted-examples-test"
 
     # working_dir = "/isabelle/src/HOL/IMP/"
@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
 
     env_init_count = 0
-    threshold = 10
+    threshold = 5
     # for theory_file_path in all_thy_files:
 
     for i in range(current_tup[0], num_projs):
@@ -80,7 +80,7 @@ if __name__ == '__main__':
             env_init_count += 1
 
             if env_init_count == threshold:
-                if j+1 == len(all_file_dict[str(i)]["tf"]):
+                if j+1 == len(all_file_dict[str(i)]["tf"]) and j < len(all_file_dict[str(i)]["wd"]):
                     json.dump((i+1,0), open(current_path, 'w'))
                 else:
                     json.dump((i,j+1), open(current_path, 'w'))
