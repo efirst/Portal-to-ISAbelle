@@ -2,44 +2,27 @@
 
 EXITCODE=0
 
+clean_up_child_processes () {
+    local pid=$1 # expects pid as argument
+    local children=`pstree -l -p $pid |grep "([[:digit:]]*)" -o |tr -d '()'`
+    if [ -z "$children" ]; then
+        echo "$pid has no children"
+    else
+        echo "cleaning $pid and ${#children[@]} children"
+        kill $children
+    fi
+}
+
 while [ "$EXITCODE" -eq 0 ]; do
-    sbt "runMain pisa.server.PisaOneStageServer8000" & PID1=$! 
+    sbt "runMain pisa.server.PisaOneStageServer8000" & server_pid=$! 
     sleep 20
-    python3 src/main/python/initial_parse.py --all_files /pisa/all_files.json --current /pisa/current.json & PID0=$! 
-    echo "PID0 (python client): $PID0"
-    echo "PID1: (server)$PID1"
-    wait $PID0
+    python3 src/main/python/initial_parse.py --all_files /pisa/all_files.json --current /pisa/current.json & client_pid=$! 
+    echo "client_pid (python client): $client_pid"
+    echo "server_pid: $server_pid"
+    wait $client_pid
     EXITCODE=$?
     echo "EXITCODE: $EXITCODE"
 
-    # if [ "${exit_status}" - 0 ];
-    # then
-    #     echo "exit ${exit_status}"
-    # fi
-    # echo "EXIT 0"
-
-    PID0_CHILDREN=`pstree -l -p $PID0 |grep "([[:digit:]]*)" -o |tr -d '()'`
-    if [ -z "$PID0_CHILDREN" ]; then
-        echo "PID0_CHILDREN is empty"
-    else
-        echo "Echo 0 killing: $PID0_CHILDREN"
-        kill $PID0_CHILDREN
-    fi
-
-    PID1_CHILDREN=`pstree -l -p $PID1 |grep "([[:digit:]]*)" -o |tr -d '()'`
-    if [ -z "$PID1_CHILDREN" ]; then
-        echo "PID1_CHILDREN is empty"
-    else
-        echo "Killing server children"
-        kill $PID1_CHILDREN
-    fi
-
-    # echo "Echo 1 killing: "
-    # echo `pstree -l -p $PID1 |grep "([[:digit:]]*)" -o |tr -d '()'`
-    # kill `pstree -l -p $PID1 |grep "([[:digit:]]*)" -o |tr -d '()'`
-
-    # ps aux |grep scala | awk '{print $2}' | xargs kill
-    # ps aux |grep java | awk '{print $2}' | xargs kill
-    # ps aux |grep poly | awk '{print $2}' | xargs kill
-
+    clean_up_child_processes $client_pid
+    clean_up_child_processes $server_pid
 done
