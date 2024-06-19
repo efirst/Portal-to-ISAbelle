@@ -30,3 +30,31 @@ def get_premises_from_proof(env, proof_string):
 def get_module_name(filename):
     if filename.endswith(".thy"):
         return filename.split("/")[-1].split(".")[0]
+ 
+# def dict_update(dict, key, value):
+#     if key in dict:
+#         dict[key].append(value)
+#     else:
+#         dict[key] = [value]
+#     return dict 
+    
+def merge_data_dicts(data_dicts):
+    merged_data = {}
+    for data_dict in data_dicts:
+        for key, value in data_dict.items():
+            if key == "const_defs":
+                if key in merged_data:
+                    merged_data[key] |= {f'{data_dict["module_name"]}:{name}':defn for name, defn in value}
+                else:
+                    merged_data[key] = {f'{data_dict["module_name"]}:{name}':defn for name, defn in value}
+            elif key == "lemma_symbols":
+                if key in merged_data:
+                    merged_data[key] += [(data_dict["module_name"], lemma, constants) for lemma, constants in value]
+                else:
+                    merged_data[key] = [(data_dict["module_name"], lemma, constants) for lemma, constants in value]
+            else:
+                # if key in merged_data:
+                #     merged_data[key].extend(value)
+                # else:
+                merged_data[key] = value
+    return merged_data
