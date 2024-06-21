@@ -28,7 +28,7 @@ def analyse_file_string(whole_file_string):
     }
 
 def analyse_file_string_with_defs(whole_file_string):
-    allowable = ["definition", "fun", "primrec", "datatype", "function", "typedecl", "typedef", "type_synonym", "record", "inductive", "coinductive"]
+    allowable = ["definition", "fun", "primrec", "primcorec", "datatype", "codatatype", "function", "typedecl", "typedef", "type_synonym", "record", "inductive", "coinductive"]
     transitions = whole_file_string.split("<\TRANSEP>")
     # state_action_proof_level_tuples = list()
     problem_names = list()
@@ -42,7 +42,7 @@ def analyse_file_string_with_defs(whole_file_string):
         state = state.strip()
         action = action.strip()
         proof_level = int(proof_level.strip())
-        starting = action.split(" ")[0]
+        starting = action.split()[0]
         
         if proof_level == 0 and (starting in allowable):
             definition_names.append(action)
@@ -94,7 +94,7 @@ def extract_test_file_from_params(
         analysed_file["theory_file_path"] = theory_file_path
         analysed_file["working_directory"] = working_directory
 
-        analysed_file["local_defs"] = local_defs
+        # analysed_file["local_defs"] = local_defs
 
         json.dump(analysed_file, open(saving_path, "w"))
         

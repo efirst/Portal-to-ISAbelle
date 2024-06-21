@@ -42,7 +42,7 @@ def init_server(jar_path, isabelle_dir, output_dir, working_dir, theory_file_pat
 
 def get_constant_name(definition):
     # TODO: make sure we can get the name from all definitions
-    tokens = definition.split(" ")
+    tokens = definition.split()
     return tokens[1]
 
 def extract_facts_and_defs(env):
@@ -58,10 +58,16 @@ def extract_file_data_from_params(jar_path, isabelle_dir, output_dir, working_di
     module_name = get_module_name(theory_file_path)
     output_path = f"{output_dir}/{module_name}_output.json"
     error_path = f"{output_dir}/{module_name}_error.json"
+    os.makedirs(output_dir, exist_ok=True) # create output directory if it doesn't exist
     
-    if not resume and os.path.isfile(output_path): 
-        # clean old directory
-        os.remove(output_path)
+    if os.path.isfile(output_path):
+        if resume:
+            print(f"Found existing output file {output_path}.")
+            return
+        else:
+            os.remove(output_path)
+    
+    print(f"Extracting data from {theory_file_path}")
     try:
         # Figure out the parameters to start the server
         print("before init_server")

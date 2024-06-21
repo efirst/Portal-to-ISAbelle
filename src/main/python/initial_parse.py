@@ -25,8 +25,10 @@ if __name__ == '__main__':
     tracker_file_path = args.tracker_file
     resume = args.resume
 
-    all_file_dict = json.load(open(os.path.join(output_dir, job_file),'r'))
-    project_idx, file_idx = json.load(open(os.path.join(output_dir, tracker_file_path), 'r'))
+    job_file_path = os.path.join(output_dir, job_file)
+    tracker_file_path = os.path.join(output_dir, tracker_file_path)
+    all_file_dict = json.load(open(job_file_path,'r'))
+    project_idx, file_idx = json.load(open(tracker_file_path, 'r'))
     
     num_projs = len(all_file_dict)
     env_init_count = 0
@@ -39,16 +41,17 @@ if __name__ == '__main__':
             start = 0
             
         project = all_file_dict[i]
-        for j in range(start, len(project["tf"])):
+        theory_files = project["theory_files"]
+        for j in range(start, len(theory_files)):
 
-            working_dir = project["wd"]
-            theory_file_path = project["tf"][j]
+            working_dir = project["working_dir"]
+            theory_file_path = theory_files[j]
                         
             extract_file_data_from_params(
                 jar_path, 
                 isabelle_dir, 
-                output_dir,
-                working_dir, 
+                os.path.join(output_dir, working_dir),
+                os.path.join(project["root_dir"], working_dir), 
                 theory_file_path,
                 resume=resume
             )
@@ -56,7 +59,7 @@ if __name__ == '__main__':
             env_init_count += 1
 
             if env_init_count == threshold:
-                if j+1 == len(project["tf"]) and i < len(project["wd"]):
+                if j+1 == len(theory_files) and i < num_projs:
                     json.dump((i+1,0), open(tracker_file_path, 'w'))
                 else:
                     json.dump((i,j+1), open(tracker_file_path, 'w'))

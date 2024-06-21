@@ -39,9 +39,8 @@ def main():
     
     dataset = []
     for i, wd in enumerate(working_dirs):
-        full_working_dir = os.path.join(dataset_dir, wd)
         theory_files = glob.glob(os.path.join(dataset_dir, wd, "**/*.thy"), recursive=True)
-        dataset.append({"wd": full_working_dir, "tf": theory_files})
+        dataset.append({"root_dir": dataset_dir, "working_dir": wd, "theory_files": theory_files})
         
     json.dump(dataset, open(os.path.join(output_dir, job_file), 'w'))
     json.dump(TRACKER_INIT, open(os.path.join(output_dir, tracker_file), 'w'))
